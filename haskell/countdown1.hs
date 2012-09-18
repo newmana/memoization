@@ -53,9 +53,9 @@ unmerges (x:xs) = [([x], xs)] ++
 	concatMap (add x) (unmerges xs)
 	where add x (ys, zs) = [(x : ys, zs), (ys, x : zs)]
 	
-combine :: f (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
-combine f (e1, v1) (e2, v2) = [(App op e1 e2, apply op v1 v2) | op <- ops, legal op v1 v2] ++
-	[(App op e2 e1, apply op v2 v1) | op <- ops, legal op v2 v1]
+combine :: (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
+combine (e1, v1) (e2, v2) = [(App op e1 e2, apply op v1 v2) | op <- ops, legal2 op v1 v2] ++
+	[(App op e2 e1, apply op v2 v1) | op <- ops, legal2 op v2 v1]
 ops = [Add, Sub, Mul, Div]
 
 nearest n ((e,v) : evs) = if d == 0 then (e,v)

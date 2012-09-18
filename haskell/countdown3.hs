@@ -1,7 +1,7 @@
 import Data.Time
 
 countdown :: Int -> [Int] -> (Expr, Value)
-countdown n = nearest n . extract . memoise . subseqs
+countdown n = nearest n . concatMap toExprs . extract . memoise . subseqs
 
 display f = do
 	start <- getCurrentTime
@@ -40,21 +40,14 @@ legal2 Sub v1 v2 = (v2 < v1)
 legal2 Mul v1 v2 = (1 < v1) && (v1 <= v2)
 legal2 Div v1 v2 = (1 < v2) && (v1 `mod` v2 == 0)
 
-mkExprs :: Memo -> [Int] -> [(Expr, Value)]
-mkExprs memo [x] = [(Num x, x)]
-mkExprs memo xs = [ev | (ys, zs) <- unmerges xs,
-		ev1 <- fetch memo ys,
-		ev2 <- fetch memo zs,
-		ev <- combine ev1 ev2]
-		
 empty :: Memo
 empty = Node[][]
 
-fetch :: Memo -> [Int] -> [(Expr, Value)]
+fetch :: Memo -> [Int] -> [Tree]
 fetch (Node es xms)[] = es
 fetch (Node es xms)(x:xs) = fetch(follow x xms) xs
 
-store :: [Int] -> [(Expr, Value)] -> Memo -> Memo
+store :: [Int] -> [Tree] -> Memo -> Memo
 store [x] es (Node fs xms) = Node fs ((x, Node es[]) : xms)
 store (x:xs) es (Node fs xms)
   = Node fs (yms ++ (x, store xs es m) : zms)
@@ -64,15 +57,27 @@ store (x:xs) es (Node fs xms)
 follow :: Int -> [(Int, Memo)] -> Memo
 follow x xms = head [m | (x', m) <- xms, x == x']
 
-extract :: Memo -> [(Expr, Value)]
+extract :: Memo -> [Tree]
 extract (Node es xms) = es ++ concatMap (extract . snd) xms
 
 memoise :: [[Int]] -> Memo
 memoise = foldl insert empty
-insert memo xs = store xs (mkExprs memo xs) memo
+insert memo xs = store xs (mkTrees memo xs) memo
 
+data Tree = Tip Int | Bin Tree Tree
 data Trie a = Node a [(Int, Trie a)]
-type Memo = Trie [(Expr, Value)]
+type Memo = Trie [Tree]
+
+mkTrees :: Memo -> [Int] -> [Tree]
+mkTrees memo [x] = [Tip x]
+mkTrees memo xs = [Bin t1 t2 | (ys, zs) <- unmerges xs,
+  t1 <- fetch memo ys,
+  t2 <- fetch memo zs]
+  
+toExprs :: Tree -> [(Expr, Value)]
+toExprs (Tip x) = [(Num x, x)]
+toExprs (Bin t1 t2) = [ev | ev1 <- toExprs t1, ev2 <- toExprs t2,
+  ev <- combine ev1 ev2] 
 		
 unmerges :: [a] -> [([a], [a])]
 unmerges [x, y] = [([x], [y])]

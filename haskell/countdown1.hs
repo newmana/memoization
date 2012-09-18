@@ -69,3 +69,5 @@ search n d ev ((e, v) : evs)
 	| d' >= d = search n d ev evs
 		where d' = abs (n - v)
 		
+main = do
+  display (countdown 12831 [1,3,7,10,11,12,14,50])

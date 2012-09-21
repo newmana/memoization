@@ -6,9 +6,12 @@ fold :: (a -> b) -> ([b] -> b) -> Tree a -> b
 fold f g (Leaf x) = f x
 fold f g (Node ts) = g (map (fold f g) ts)
 
+okFold1 = fold (-) (head) (Leaf 1) 5 == (-4)
+okFold2 = fold id concat (Node [Node [Leaf [3],Leaf [4]],Node [Leaf [4],Leaf [5]]]) == [3,4,4,5]
+
 unfold :: (b -> Bool) -> (b -> a) -> (b -> [b]) -> b -> Tree a
 unfold p v h x = if p x then Leaf (v x) else
-	Node (map (unfold p v h) (h x))
+  Node (map (unfold p v h) (h x))
 
 data LTree a = LLeaf a | LNode a [LTree a] deriving (Show, Eq)
 
@@ -20,14 +23,23 @@ hylo f g h = fold f g . mkTree h
 
 type Layer a = [Tree a]
 
+lleaf :: (t -> a) -> t -> LTree a
 lleaf f x = LLeaf (f x)
+
+lnode :: ([a] -> a) -> [LTree a] -> LTree a
 lnode g ts = LNode (g (map label ts)) ts
+
+label :: LTree t -> t
 label (LLeaf x) = x
 label (LNode x ts) = x
+
+wrap :: t -> [t]
 wrap x = [x]
 
+mkTree :: ([a] -> [[a]]) -> [a] -> Tree [a]
 mkTree h = unfold single id h
 
+single :: [a] -> Bool
 single x 
   | length x == 1 = True
   | otherwise = False

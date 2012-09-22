@@ -1,0 +1,5 @@
+source :gemcutter
+source :rubygems
+
+gem "method_decorators"
+

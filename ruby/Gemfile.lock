@@ -1,0 +1,11 @@
+GEM
+  remote: http://rubygems.org/
+  remote: http://rubygems.org/
+  specs:
+    method_decorators (0.9.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  method_decorators

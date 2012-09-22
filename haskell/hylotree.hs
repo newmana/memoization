@@ -54,7 +54,7 @@ split xs = [take n xs, drop n xs]
 
 okSplit1 = split "abc" == ["a", "bc"]  
 okSplit2 = split "abcd" == ["ab", "cd"]  
-  
+
 isegs :: [a] -> [[a]]
 isegs xs = [init xs, tail xs]
 

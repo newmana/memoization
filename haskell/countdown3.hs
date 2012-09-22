@@ -103,3 +103,5 @@ search n d ev ((e, v) : evs)
 		
 main = do
   display (countdown 12831 [1,3,7,10,11,12,14,50])
+  display (countdown 53280 [2,3,7,10,12,19,24,50])
+  display (countdown 53280 [2,5,8,10,11,17,24,50])

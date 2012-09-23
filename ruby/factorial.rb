@@ -8,13 +8,13 @@ class Object
   extend MethodDecorators 
 end
 
-def fib(n)
-  n < 2 ? n : fib(n - 1) + fib(n - 2)
+def fact(n)
+  n < 1 ? 1 : n * fact(n - 1)
 end
 
 +Memoize 
-def ffib(n)
-  n < 2 ? n : ffib(n - 1) + ffib(n - 2)
+def ffact(n)
+  n < 1 ? 1 : n * ffact(n - 1)
 end
 
 def time(exec)
@@ -24,7 +24,7 @@ def time(exec)
   puts time
 end  
 
-l1 = lambda { fib(30) }
-l2 = lambda { ffib(30) }
-time(l1)
-time(l2)
+time(lambda { fact(50) })
+time(lambda { ffact(50) })
+time(lambda { fact(500) })
+time(lambda { fact(500) })

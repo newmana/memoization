@@ -1,11 +1,5 @@
+import Timer
 import Data.Time
-
-display f = do
-	start <- getCurrentTime
-	result <- print $ f
-	stop <- getCurrentTime
-	print $ diffUTCTime stop start
-	return result
 
 fac :: Int -> Int
 fac 0 = 0
@@ -17,7 +11,7 @@ facs = scanl (*) 1 [1..]
 ffac n = facs !! n
 
 main = do
-  display (fac 10)
-  display (ffac 10)
-  display (fac 20)
-  display (ffac 20)
+  displayTime (fac 10)
+  displayTime (ffac 10)
+  displayTime (fac 20)
+  displayTime (ffac 20)

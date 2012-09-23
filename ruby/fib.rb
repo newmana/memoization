@@ -24,7 +24,7 @@ def time(exec)
   puts time
 end  
 
-l1 = lambda { fib(30) }
-l2 = lambda { ffib(30) }
+l1 = lambda { fib(40) }
+l2 = lambda { ffib(40) }
 time(l1)
 time(l2)

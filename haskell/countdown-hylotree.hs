@@ -1,5 +1,3 @@
--- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 168-172
-
 import qualified Data.Monoid as M
 
 data Tree a = Leaf a | Node [Tree a] deriving (Show, Eq)
@@ -31,6 +29,24 @@ lleaf f x = LLeaf (f x)
 
 lnode :: ([a] -> a) -> [LTree a] -> LTree a
 lnode g ts = LNode (g (map label ts)) ts
+-- lnode g ts = LNode zr ts
+--   where 
+-- 	zr = g (zip xs) (reverse ys)
+-- 	(xs, ys) = halved xs ys
+
+halved :: [LTree a] -> ([a], [a])
+halved ts = halve (traverse (forest 0 ts))
+halve xs = splitAt (div (length xs) 2) xs
+  
+forest k (LLeaf x : ts) = LLeaf x : ts
+forest k (LNode x us : vs) = LNode x (forest k (drop k us)) : forest (k + 1) vs
+
+traverse :: [LTree a] -> [a]
+traverse [] = []
+traverse ts = map label ts ++ traverse (concatMap subtrees ts)
+
+subtrees (LLeaf x) = []
+subtrees (LNode x ts) = ts
 
 label :: LTree t -> t
 label (LLeaf x) = x
@@ -72,17 +88,7 @@ okMinors = (minors "abc" == ["ab", "ac", "bc"])
 recover :: [[a]] -> [a]
 recover xss = head (head xss) : last xss
 
-treeToNexus :: Tree [a] -> LTree [a]
-treeToNexus = fill id recover
-
 okRI = (recover (isegs "abcd") == (id "abcd"))
 
-ti = mkTree isegs [3,4,5]
-tm = mkTree minors [3,4,5]
-okMkTree1 = ti == Node [Node [Leaf [3],Leaf [4]],Node [Leaf [4],Leaf [5]]]
-okMkTree2 = tm == Node [Node [Leaf [3],Leaf [4]],Node [Leaf [3],Leaf [5]],Node [Leaf [4],Leaf [5]]]
-okToNexus1 = treeToNexus ti == LNode [3,4,5] [LNode [3,4] [LLeaf [3],LLeaf [4]],LNode [4,5] [LLeaf [4],LLeaf [5]]]
-okToNexus2 = treeToNexus tm == LNode [3,4,5] [LNode [3,4] [LLeaf [3],LLeaf [4]],LNode [3,5] [LLeaf [3],LLeaf [5]],LNode [4,5] [LLeaf [4],LLeaf [5]]]
-
-allTests = [okSingle1, okSingle2, okSingle3, okSplit1, okSplit2, okIsegs, okMinors, okMkTree1, okMkTree2, okToNexus1, okToNexus2]
+allTests = [okSingle1, okSingle2, okSingle3, okSplit1, okSplit2, okIsegs, okMinors]
 testAll = (M.getAll $ M.mconcat $ map M.All allTests) == True

@@ -1,3 +1,5 @@
+-- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 172-179
+
 data Tree a = Leaf a | Node [Tree a]
 
 fold :: a -> b -> ([b] -> b) -> Tree a -> b
@@ -8,7 +10,7 @@ unfold :: (b -> Bool) -> (b -> a) -> (b -> [b]) -> b -> Tree a
 unfold p v h x = if p x then Leaf (v x) else
 	Node (map (unfold p v h) (h x))
 
-hylo x = if p x then f x else g(map hylo h x)
+--hylo x = if p x then f x else g(map hylo h x)
 
 data LTree a = LLeaf a | LNode a [LTree a]
 

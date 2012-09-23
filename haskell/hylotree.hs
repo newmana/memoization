@@ -6,8 +6,9 @@ fold :: (a -> b) -> ([b] -> b) -> Tree a -> b
 fold f g (Leaf x) = f x
 fold f g (Node ts) = g (map (fold f g) ts)
 
+a = (Node [Node [Leaf [3],Leaf [4]],Node [Leaf [4],Leaf [5]]])
 okFold1 = fold (-) (head) (Leaf 1) 5 == (-4)
-okFold2 = fold id concat (Node [Node [Leaf [3],Leaf [4]],Node [Leaf [4],Leaf [5]]]) == [3,4,4,5]
+okFold2 = fold id concat a == [3,4,4,5]
 
 unfold :: (b -> Bool) -> (b -> a) -> (b -> [b]) -> b -> Tree a
 unfold p v h x = if p x then Leaf (v x) else

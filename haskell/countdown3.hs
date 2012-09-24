@@ -57,8 +57,8 @@ memoise :: [[Int]] -> Memo
 memoise = foldl insert empty
 insert memo xs = store xs (mkTrees memo xs) memo
 
-data Tree = Tip Int | Bin Tree Tree
-data Trie a = Node a [(Int, Trie a)]
+data Tree = Tip Int | Bin Tree Tree deriving (Show)
+data Trie a = Node a [(Int, Trie a)] deriving (Show)
 type Memo = Trie [Tree]
 
 mkTrees :: Memo -> [Int] -> [Tree]

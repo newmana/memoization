@@ -31,12 +31,13 @@ lleaf f x = LLeaf (f x)
 
 lnode :: ([a] -> a) -> [LTree a] -> LTree a
 lnode g ts = LNode (g (map label ts)) ts
---lnode g ts = LNode (g (zip xs) (reverse ys)) ts
---  where 
---    (xs, ys) = halved ts
+--lnode g ts = LNode (g (blah ts)) ts
+
+blah ts = unmerge $ halved [ts]
+unmerge (xs, ys) = (zip xs (reverse ys))
 
 halved :: [LTree a] -> ([a], [a])
-halved ts = halve (traverse (forest 0 ts))
+halved ts = halve (tail (traverse (forest 0 ts)))
 
 okHalved = halved [lti] == ([],[])
 

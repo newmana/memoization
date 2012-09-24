@@ -1,3 +1,4 @@
+-- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 173-179
 import Data.Time
 
 countdown :: Int -> [Int] -> (Expr, Value)

@@ -33,7 +33,10 @@ lnode :: ([a] -> a) -> [LTree a] -> LTree a
 lnode g ts = LNode (g (map label ts)) ts
 --lnode g ts = LNode (g (blah ts)) ts
 
-blah ts = unmerge $ halved [ts]
+blah :: [LTree a] -> [(a, a)]
+blah ts = unmerge $ halved ts
+
+unmerge :: ([a], [b]) -> [(a, b)]
 unmerge (xs, ys) = (zip xs (reverse ys))
 
 halved :: [LTree a] -> ([a], [a])

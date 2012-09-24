@@ -1,4 +1,3 @@
-import Data.Time
 import Timer
 
 countdown :: Int -> [Int] -> (Expr, Value)

@@ -64,7 +64,7 @@ memoise :: [[Int]] -> Memo
 memoise = foldl insert empty
 insert memo xs = store xs (mkExprs memo xs) memo
 
-data Trie a = Node a [(Int, Trie a)]
+data Trie a = Node a [(Int, Trie a)] deriving (Show)
 type Memo = Trie [(Expr, Value)]
 		
 unmerges :: [a] -> [([a], [a])]

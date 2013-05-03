@@ -6,16 +6,16 @@
 
 \f0\fs24 \cf0 Visualising Memoization\
 \
-Memoization is a technique that allows programs to improve their efficiently as they run.  This is achieved in Haskell using lazy data structures.  They are difficult to observe, hard to ensure they are correct and should have no effect but to improve the performance of the program. Through visualisation, we'll show examples of memoization and explain how to better debug, understand and ensure that these data structures are performing correctly. \
+Memoization is a technique that allows programs to trade memory usage for improved runtime performance.  This is achieved in Haskell by using lazy data structures.  They are difficult to observe, hard to ensure they are correct and should have no effect but to improve the performance of the program. Through visualisation, we'll show examples of memoization and explain how to better debug, understand and ensure that these data structures are performing correctly. \
 \
-The first example will show how sharing is used in Haskell's IntMap using the union function.  Values in the nodes are shared an \
+The first example will show how sharing is used in Haskell's IntMap using the union function of two lists.  Values in the nodes are shared from the two lists.  Showing that this is the way that Haskell achieves performance while still maintaining immutable data structures.\
 \
-We will introduce an example using the game show "Letters and Numbers" where the player is asked to use +,-,/,* and 5 numbers to reach a target value.  We'll briefly show how this a solution is achieved and how using memoization can improve the performance by comparing and visualising three data structures: trie, skeleton tree and nexus.  \
+The game "Letters and Numbers" is another example of where sharing values saves time.  The player is asked to use +,-,/,* and 5 numbers to reach a target value.  We'll briefly show how this a solution is achieved and how using memoization can improve the performance by comparing and visualising three data structures: trie, skeleton tree and nexus.  \
 \
 We'll also show a common problem in lazy data structures, a "space leak", where an entire data structure is evaluated when it is not required and how to reason about.\
 \
 "GHC Vis - A tool for visualising Haskell Data Structures", http://felsin9.de/nnis/ghc-vis/\
-"Functional Pearl: Trouble Shared is Trouble Halved", {\field{\*\fldinst{HYPERLINK "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.10.1217"}}{\fldrslt http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.10.1217}}\
+"Functional Pearl: Trouble Shared is Trouble Halved", http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.10.1217\
 \
 memoization\
 visualization\

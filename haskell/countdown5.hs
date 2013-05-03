@@ -15,6 +15,8 @@ display f = do
 subseqs [x] = [[x]]
 subseqs (x:xs) = xss ++ [x] : map (x:) xss
         where xss = subseqs xs
+--subseqs (x:xs) = foldl f [] (subseqs xs)
+--  where f ys r = ys : (x : ys) : r
 
 data Op = Add | Sub | Mul | Div deriving (Show)
 data Expr = Num Int | App Op Expr Expr deriving (Show)

@@ -1,5 +1,6 @@
 -- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 173-179
 import Data.Time
+import Data.List
 
 countdown :: Int -> [Int] -> (Expr, Value)
 countdown n = nearest n . concatMap mkExprs . subseqs
@@ -11,10 +12,9 @@ display f = do
 	print $ diffUTCTime stop start
 	return result
 
-subseqs :: [a] -> [[a]]
 subseqs [x] = [[x]]
-subseqs (x:xs) = [x] : foldr f [] (subseqs xs)
-	where f ys r = ys : (x: ys) : r
+subseqs (x:xs) = xss ++ [x] : map (x:) xss
+        where xss = subseqs xs
 
 data Op = Add | Sub | Mul | Div deriving (Show)
 data Expr = Num Int | App Op Expr Expr deriving (Show)
@@ -83,7 +83,7 @@ halved :: [LTree a] -> ([a], [a])
 halved ts = halve (tail (traverse (forest 0 ts)))
 
 halve :: [a] -> ([a], [a])
-halve xs = splitAt (div (length xs) 2) xs
+halve = foldr (\x (ys, zs) -> (x : zs, ys)) ([], [])
 
 forest :: Int -> [LTree a] -> [LTree a]  
 forest k [] = []

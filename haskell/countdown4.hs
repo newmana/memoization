@@ -152,4 +152,5 @@ search n d ev ((e, v) : evs)
 main = do
     display (countdown 831 [1,3,7,10,25,50])
     display (countdown 12830 [1,3,7,11,21,51])
-    display (countdown 53281 [1,3,5,7,9,12,50]) 
+    display (countdown 53281 [1,3,5,7,9,12,50])
+    display (countdown 58101 [5,6,7,8,9,10,11,12])      

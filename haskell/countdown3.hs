@@ -1,5 +1,6 @@
 -- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 173-179
 import Data.Time
+import Data.List hiding (insert)
 
 countdown :: Int -> [Int] -> (Expr, Value)
 countdown n = nearest n . concatMap toExprs . extract . memoise . subseqs
@@ -67,7 +68,7 @@ empty = Node[][]
 
 fetch :: Memo -> [Int] -> [Tree]
 fetch (Node es xms)[] = es
-fetch (Node es xms)(x:xs) = fetch(follow x xms) xs
+fetch (Node es xms)(x:xs) = fetch (follow x xms) xs
 
 store :: [Int] -> [Tree] -> Memo -> Memo
 store [x] es (Node fs xms) = Node fs ((x, Node es[]) : xms)
@@ -83,7 +84,7 @@ extract :: Memo -> [Tree]
 extract (Node es xms) = es ++ concatMap (extract . snd) xms
 
 memoise :: [[Int]] -> Memo
-memoise = foldl insert empty
+memoise = foldl' insert empty
 insert memo xs = store xs (mkTrees memo xs) memo
 
 data Tree = Tip Int | Bin Tree Tree deriving (Show)
@@ -103,8 +104,7 @@ toExprs (Bin t1 t2) = [ev | ev1 <- toExprs t1, ev2 <- toExprs t2,
 		
 unmerges :: [a] -> [([a], [a])]
 unmerges [x, y] = [([x], [y])]
-unmerges (x:xs) = [([x], xs)] ++
-	concatMap (add x) (unmerges xs)
+unmerges (x:xs) = [([x], xs)] ++ (concatMap (add x) (unmerges xs))
 	where add x (ys, zs) = [(x : ys, zs), (ys, x : zs)]
 	
 nearest n ((e,v) : evs) = if d == 0 then (e,v)
@@ -122,3 +122,4 @@ main = do
     display (countdown 831 [1,3,7,10,25,50])
     display (countdown 12830 [1,3,7,11,21,51])
     display (countdown 53281 [1,3,5,7,9,12,50])
+    display (countdown 53281 [2,4,6,8,12,16,32,64])

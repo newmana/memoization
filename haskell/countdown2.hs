@@ -1,5 +1,6 @@
 -- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 173-179
 import Data.Time
+import Data.List hiding (insert)
 
 countdown :: Int -> [Int] -> (Expr, Value)
 countdown n = nearest n . extract . memoise . subseqs
@@ -12,7 +13,7 @@ display f = do
         return result
 
 subseqs [x] = [[x]]
-subseqs (x:xs) = xss ++ [x] : map (x:) xss
+subseqs (x:xs) = xss ++ ([x] : map (x:) xss)
 	where xss = subseqs xs
 
 data Op = Add | Sub | Mul | Div deriving (Eq, Show)
@@ -57,7 +58,7 @@ comb1 (e1, v1)(e2, v2) =
 
 comb2 :: (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
 comb2 (e1, v1)(e2, v2) =
-  [(App Add e1 e2, v1 + v2) | non Sub e1, non Add e2, non Sub e2] ++
+  ([(App Add e1 e2, v1 + v2) | non Sub e1, non Add e2, non Sub e2]) ++
   (if 1 < v1 && non Div e1 && non Div e2
     then [(App Mul e1 e2, v1 * v2) | non Mul e2] ++ [(App Div e1 e2, 1)]
     else [])
@@ -82,12 +83,12 @@ store (x:xs) es (Node fs xms)
   = Node fs (yms ++ (x, store xs es m) : zms)
     where (yms, (z, m) : zms) = break (equals x) xms
 	  equals x (z, m) = (x == z)
-	  
+
 follow :: Int -> [(Int, Memo)] -> Memo
 follow x xms = head [m | (x', m) <- xms, x == x']
 
 extract :: Memo -> [(Expr, Value)]
-extract (Node es xms) = es ++ concatMap (extract . snd) xms
+extract (Node es xms) = es ++ (concatMap (extract . snd) xms)
 
 memoise :: [[Int]] -> Memo
 memoise = foldl insert empty
@@ -98,8 +99,7 @@ type Memo = Trie [(Expr, Value)]
 		
 unmerges :: [a] -> [([a], [a])]
 unmerges [x, y] = [([x], [y])]
-unmerges (x:xs) = [([x], xs)] ++
-	concatMap (add x) (unmerges xs)
+unmerges (x:xs) = [([x], xs)] ++ (concatMap (add x) (unmerges xs))
 	where add x (ys, zs) = [(x : ys, zs), (ys, x : zs)]
 	
 nearest n ((e,v) : evs) = if d == 0 then (e,v)
@@ -114,6 +114,6 @@ search n d ev ((e, v) : evs)
 		where d' = abs (n - v)
 	
 main = do
-    display (countdown 128310 [1,3,7,10,11,12,14,50])
-    display (countdown 532800 [2,3,7,10,12,19,24,50])
-    display (countdown 532800 [2,5,8,10,11,17,24,50])	
+    display (countdown 831 [1,3,7,10,25,50])
+    display (countdown 12830 [1,3,7,11,21,51])
+    display (countdown 53281 [1,3,5,7,9,12,50])

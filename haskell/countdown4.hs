@@ -150,6 +150,6 @@ search n d ev ((e, v) : evs)
 		where d' = abs (n - v)
 		
 main = do
-    display (countdown 128310 [1,3,7,10,11,12,14,50])
-    display (countdown 532800 [2,3,7,10,12,19,24,50])
-    display (countdown 532800 [2,5,8,10,11,17,24,50])
+    display (countdown 831 [1,3,7,10,25,50])
+    display (countdown 12830 [1,3,7,11,21,51])
+    display (countdown 53281 [1,3,5,7,9,12,50]) 

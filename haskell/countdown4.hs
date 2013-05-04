@@ -1,5 +1,6 @@
 -- Based on "Pearls of Functional Algorithm Design", Chapter 21 "Hylomorphisms and Nexuses", pp 173-179
 import Data.Time
+import Data.List
 
 countdown :: Int -> [Int] -> (Expr, Value)
 countdown n = nearest n . concatMap mkExprs . subseqs
@@ -13,10 +14,10 @@ display f = do
 
 subseqs [x] = [[x]]
 subseqs (x:xs) = xss ++ [x] : map (x:) xss
-	where xss = subseqs xs
+        where xss = subseqs xs
 
-data Op = Add | Sub | Mul | Div deriving (Show)
-data Expr = Num Int | App Op Expr Expr deriving (Show)
+data Op = Add | Sub | Mul | Div deriving (Show, Eq)
+data Expr = Num Int | App Op Expr Expr deriving (Show, Eq)
 type Value = Int
 
 value :: Expr -> Value
@@ -29,17 +30,38 @@ apply Sub = (-)
 apply Mul = (*)
 apply Div = (div)
 
-legal :: Op -> Value -> Value -> Bool
-legal Add v1 v2 = (v1 <= v2)
-legal Sub v1 v2 = (v2 < v1)
-legal Mul v1 v2 = (1 < v1) && (v1 <= v2)
-legal Div v1 v2 = (1 < v2) && (v1 `mod` v2 == 0)
+non :: Op -> Expr -> Bool
+non op (Num x) = True
+non op1 (App op2 e1 e2) = op1 /= op2
 
-legal2 :: Op -> Value -> Value -> Bool
-legal2 Add v1 v2 = (v1 <= v2)
-legal2 Sub v1 v2 = (v2 < v1)
-legal2 Mul v1 v2 = (1 < v1) && (v1 <= v2)
-legal2 Div v1 v2 = (1 < v2) && (v1 `mod` v2 == 0)
+legal :: Op -> (Expr, Value) -> (Expr, Value) -> Bool
+legal Add (e1, v1)(e2, v2) = (v1 <= v2) && non Sub e1 && non Add e2 && non Sub e2
+legal Sub (e1, v1)(e2, v2) = (v2 < v1) && non Sub e1 && non Sub e2
+legal Mul (e1, v1)(e2, v2) = (1 < v1 && v1 <= v2) && non Div e1 && non Mul e2 && non Div e2
+legal Div (e1, v1)(e2, v2) = (1 < v2 && v1 `mod` v2 == 0) && non Div e1 && non Div e2
+
+combine :: (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
+combine (e1, v1)(e2, v2)
+  | v1 < v2  = comb1(e1, v1)(e2, v2)
+  | v1 == v2 = comb2(e1, v1)(e2, v2)
+  | v1 > v2  = comb1(e2, v2)(e1, v1)
+
+comb1 :: (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
+comb1 (e1, v1)(e2, v2) =
+  (if non Sub e1 && non Sub e2
+    then [(App Add e1 e2, v1 + v2) | non Add e2] ++ [(App Sub e2 e1, v2 - v1)]
+    else []) ++
+  (if 1 < v1 && non Div e1 && non Div e2
+    then [(App Mul e1 e2, v1 * v2) | non Mul e2] ++ [(App Div e2 e1, q) | r == 0]
+    else [])
+    where (q, r) = divMod v2 v1
+
+comb2 :: (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
+comb2 (e1, v1)(e2, v2) =
+  [(App Add e1 e2, v1 + v2) | non Sub e1, non Add e2, non Sub e2] ++
+  (if 1 < v1 && non Div e1 && non Div e2
+    then [(App Mul e1 e2, v1 * v2) | non Mul e2] ++ [(App Div e1 e2, 1)]
+    else [])
 
 data Tree a = Leaf a | Node [Tree a] deriving (Show, Eq)
 
@@ -82,7 +104,7 @@ halved :: [LTree a] -> ([a], [a])
 halved ts = halve (tail (traverse (forest 0 ts)))
 
 halve :: [a] -> ([a], [a])
-halve xs = splitAt (div (length xs) 2) xs
+halve = foldr (\x (ys, zs) -> (x : zs, ys)) ([], [])
 
 forest :: Int -> [LTree a] -> [LTree a]  
 forest k [] = []
@@ -116,11 +138,6 @@ minors (x : xs) = map (x :) (minors xs) ++ [xs]
 unmerges :: [a] -> [([a], [a])]
 unmerges x = unmerge $ halved $ [treeToNexus $ mkTree minors x]
 	
-combine :: (Expr, Value) -> (Expr, Value) -> [(Expr, Value)]
-combine (e1, v1) (e2, v2) = [(App op e1 e2, apply op v1 v2) | op <- ops, legal2 op v1 v2] ++
-	[(App op e2 e1, apply op v2 v1) | op <- ops, legal2 op v2 v1]
-ops = [Add, Sub, Mul, Div]
-
 nearest n ((e,v) : evs) = if d == 0 then (e,v)
 	else search n d (e, v) evs
 	where d = abs (n - v)
@@ -133,6 +150,6 @@ search n d ev ((e, v) : evs)
 		where d' = abs (n - v)
 		
 main = do
-    display (countdown 12831 [1,3,7,10,11,12,14,50])
-    display (countdown 53280 [2,3,7,10,12,19,24,50])
-    display (countdown 53280 [2,5,8,10,11,17,24,50])
+    display (countdown 128310 [1,3,7,10,11,12,14,50])
+    display (countdown 532800 [2,3,7,10,12,19,24,50])
+    display (countdown 532800 [2,5,8,10,11,17,24,50])

@@ -1,14 +1,17 @@
-import Timer
+import Data.MemoTrie
 
 fib :: Int -> Int
 fib 0 = 0
 fib 1 = 1
 fib n = fib (n - 1) + fib (n - 2)
 
-fibs :: [Int]
-fibs = 0 : 1 : [a + b | (a, b) <- zip fibs (tail fibs)]
-ffib n = fibs !! n
+fib' :: Int -> Int
+fib' n = fib'' n
+  where
+    mfib = memo fib'
+    fib'' 0 = 0
+    fib'' 1 = 1
+    fib'' n = mfib (n - 1) + mfib (n - 2)
 
 main = do
-  displayTime (fib 30)
-  displayTime (ffib 30)
+  print $ fib'(40)
